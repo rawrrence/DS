@@ -25,9 +25,9 @@ class MessagePasser {
   var oosMap : util.HashMap[Integer, ObjectOutputStream] = null
   var receivedRequests : util.LinkedList[Message] = null
   var receivedReplies : util.LinkedList[Message] = null
-  var pendingWork = util.LinkedList[Message] = null
-  var pendingService = util.LinkedList[Message] = null
-  var sentRequests = util.ArrayList[Message] = null
+  var pendingWork : util.LinkedList[Message] = null
+  var pendingService : util.LinkedList[Message] = null
+  var sentRequests : util.ArrayList[Message] = null
 
   def this(localName : String, localPort : String, bootstrapServer : String, bootstrapPort : String) {
     this()
