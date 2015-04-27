@@ -46,6 +46,4 @@ class NetworkService extends Service {
     }
     toast.show()
   }
-
-  def
 }
