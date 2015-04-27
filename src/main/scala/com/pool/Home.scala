@@ -54,6 +54,11 @@ class Home extends Activity {
     doStartAndBindService()
   }
 
+  override def onResume(): Unit = {
+    super.onResume()
+
+  }
+
   override def onDestroy(): Unit = {
     super.onDestroy()
     unbindService(mConnection)

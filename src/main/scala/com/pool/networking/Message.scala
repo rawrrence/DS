@@ -17,6 +17,14 @@ class Message extends java.io.Serializable {
     this.text = text
   }
 
+  def this(src : Int, dest : Int, text : String, mtype : String) {
+    this()
+    this.src = src
+    this.dest = dest
+    this.text = text
+    this.mType = mtype
+  }
+
   def setMessageType(mType : String) {
     this.mType = mType
   }

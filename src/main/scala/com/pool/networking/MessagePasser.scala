@@ -254,7 +254,7 @@ class MessagePasser {
     }
 
     def handleIOException(remoteNodeId : Int): Unit = {
-      println("Connection with " + remoteNodeId + " has been closed")
+      Log.w("Pool","Connection with " + remoteNodeId + " has been closed")
       conns.remove(remoteNodeId)
       oosMap.remove(remoteNodeId)
       connectionOpen = false

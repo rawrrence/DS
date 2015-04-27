@@ -59,10 +59,12 @@ class Request extends Activity {
       val descrp: String = descrpText.getText.toString
 
       // TODO: send the request using the message passer from NetworkService
-      val Message: Message = new Message(mBoundService.mp.self.id, -1, descrp)
+      var msg : Message = new Message(mBoundService.mp.self.id, -1, descrp,"REQUEST")
 
-      mBoundService.mp.broadcast(Message)
-      Toast.makeText(Request.this, "Request has been sent!", Toast.LENGTH_SHORT)
+      mBoundService.mp.broadcast(msg)
+      val toast = Toast.makeText(Request.this, "Request has been sent!", Toast.LENGTH_SHORT)
+      toast.show()
+      finish()
     }
   }
 

@@ -24,8 +24,7 @@ class ListLayoutActivity extends ListActivity {
     }
   }
 
-  def doStartAndBindService(): Unit = {
-    startService(new Intent(this, classOf[NetworkService]))
+  def doBindService(): Unit = {
     bindService(new Intent(this, classOf[NetworkService]), mConnection, Context.BIND_AUTO_CREATE)
     mIsBound = true
   }
@@ -55,7 +54,7 @@ class ListLayoutActivity extends ListActivity {
       }
     })
 
-    doStartAndBindService()
+    doBindService()
   }
 
   override def onDestroy(): Unit = {
