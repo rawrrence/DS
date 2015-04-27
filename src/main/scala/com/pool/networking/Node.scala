@@ -1,7 +1,5 @@
 package com.pool.networking
 
-import android.location.Location
-
 /**
  * Created by Lawrence on 4/15/15.
  */

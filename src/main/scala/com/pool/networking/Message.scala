@@ -6,7 +6,9 @@ package com.pool.networking
 class Message extends java.io.Serializable {
   var src : Int = -1
   var dest : Int = -1
+  var mType : String = null
   var text : String = null
+  var seqNum : Int = -1
 
   def this(src : Int, dest : Int, text : String) {
     this()
@@ -15,4 +17,7 @@ class Message extends java.io.Serializable {
     this.text = text
   }
 
+  def setMessageType(mType : String) {
+    this.mType = mType
+  }
 }

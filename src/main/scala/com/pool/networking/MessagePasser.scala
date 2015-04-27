@@ -7,41 +7,64 @@ import java.util._
 
 import android.location.Location
 import android.util.Log
+import java.util.Collections
 
 /**
  * Created by Lawrence on 4/15/15.
  */
 class MessagePasser {
+  val Request : String = "REQUEST"
+  val Reply : String = "REPLY"
+  val Cancel : String = "CANCEL"
+
+  var currentSeqNum = 0
   var self : Node = null
   var bootstrapServer : String = null
   var bootstrapPort : Int = -1
   var config : Configuration = null
+
   var conns : HashMap[Integer, Socket] = null
   var oosMap : HashMap[Integer, ObjectOutputStream] = null
-  var receiveQueue : util.LinkedList[Message] = null
   var locationService : LocationService = null
 
   val TIMEOUT = 3000 //3 sec
 
+  var receivedRequests : util.LinkedList[Message] = null
+  var receivedReplies : util.LinkedList[Message] = null
+  var pendingWork : util.LinkedList[Message] = null
+  var pendingService : util.LinkedList[Message] = null
+  var sentRequests : util.ArrayList[Message] = null
+
+
   def this(locationService : LocationService, localName : String, localPort : String, bootstrapServer : String, bootstrapPort : String) {
     this()
     this.locationService = locationService
+
     this.bootstrapServer = bootstrapServer
     this.bootstrapPort = bootstrapPort.toInt
     conns = new util.HashMap[Integer, Socket]()
     oosMap = new util.HashMap[Integer, ObjectOutputStream]()
-    receiveQueue = new util.LinkedList[Message]()
+
+    Log.w("Pool", "Before bootstrap")
+    bootstrap(localName, localPort)
+    Log.w("Pool", "After bootstrap")
+    receivedRequests = new util.LinkedList[Message]()
+    receivedReplies = new util.LinkedList[Message]()
+    pendingWork = new util.LinkedList[Message]()
+    pendingService = new util.LinkedList[Message]()
+    sentRequests = new util.ArrayList[Message]()
 
     bootstrap(localName, localPort)
 
     //start connecting
     val nodeList = new util.ArrayList[Integer](config.nodes.keySet)
     Collections.sort(nodeList)
-    val cf : ConnectionFormer = new ConnectionFormer(nodeList, this)
+
+    var cf : ConnectionFormer = new ConnectionFormer(nodeList, this)
     new Thread(cf).start()
 
     //start listening
-    val server : Server = new Server(this)
+    var server : Server = new Server(this)
     new Thread(server).start()
   }
 
@@ -67,7 +90,7 @@ class MessagePasser {
     }
 
     Log.w("Pool", "sending info to bootsrap")
-    //send my info
+   //send my info
     try {
       val os = new ObjectOutputStream(sock.getOutputStream)
       os.writeObject(new BootstrapMessage(tmpNode, 0)) //0 for init
@@ -119,13 +142,16 @@ class MessagePasser {
   def send(msg : Message, dest : Int): Unit = {
     if (conns.get(dest) == null) {
       println("Destination does not exist: " + dest)
-      return;
+      return
     }
     msg.src = this.self.id
     deliver(msg, dest)
   }
 
   def broadcast(msg : Message): Unit = {
+    msg.seqNum = currentSeqNum
+    currentSeqNum = currentSeqNum + 1
+    sentRequests.add(msg)
     val keys = conns.keySet()
     val it = keys.iterator()
     while(it.hasNext) {
@@ -213,8 +239,15 @@ class MessagePasser {
       println("Connection established with " + remoteNodeId)
       while (connectionOpen) try {
         msg = ois.readObject().asInstanceOf[Message]
-        println(msg.text)
-        receiveQueue.add(msg)
+        if (msg.mType.equals(Request)) {
+          receivedRequests.add(msg);
+        }
+        if (msg.mType.equals(Reply)) {
+          receivedReplies.add(msg)
+        }
+        if (msg.mType.equals(Cancel)) {
+            findAndRemoveRequest(msg)
+        }
       } catch {
         case e: ClassNotFoundException => ;
         case e: IOException => handleIOException(remoteNodeId)
@@ -263,6 +296,31 @@ class MessagePasser {
         } catch {
           case e: IOException => ;
         }
+      }
+    }
+  }
+
+  def findAndRemoveRequest(msg : Message): Unit = {
+    val it = receivedRequests.iterator()
+    while(it.hasNext) {
+      val m = it.next()
+      if (m.src == msg.src && m.seqNum == msg.seqNum) {
+        receivedRequests.remove(m)
+        if (msg.text.equals(self.name)) {
+          pendingWork.add(m)
+        }
+      }
+    }
+  }
+
+  def acceptReply(msg : Message): Unit = {
+    val it = sentRequests.iterator()
+    while(it.hasNext) {
+      val m = it.next()
+      if (m.seqNum == msg.seqNum) {
+        m.dest = msg.src
+        pendingService.add(m)
+        sentRequests.remove(m)
       }
     }
   }
