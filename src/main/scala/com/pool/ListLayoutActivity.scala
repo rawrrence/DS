@@ -19,8 +19,6 @@ class ListLayoutActivity extends ListActivity {
 
     var mArr = Array(m1.text, m2.text, m3.text)
 
-
-    val countries = getResources().getStringArray(R.array.countries_array)
     setListAdapter(new ArrayAdapter[String](this, R.layout.list_item, mArr))
 
     val lv = getListView()
