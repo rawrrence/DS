@@ -58,17 +58,15 @@ class LocationService extends java.io.Serializable {
 
 
     isGpsOn = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    isNetworkOn = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    isNetworkOn = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
 
     // Register the listener with the Location Manager to receive location updates
     if (isGpsOn) {
       locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, MIN_DISTANCE, locationListener)
-      locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null)
       Log.w("Pool", "Location: using gps")
     } else if (isNetworkOn) {
       locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, MIN_DISTANCE, locationListener)
-      locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null)
       Log.w("Pool", "Location: using network")
     } else {
       Log.w("Pool", "Location: ERROR No Provider")
@@ -82,7 +80,7 @@ class LocationService extends java.io.Serializable {
       loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
     } else if (isNetworkOn) {
       loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-    }
+    } 
 
     return loc
   }
