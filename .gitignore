@@ -1,4 +1,15 @@
-*
+project/
 
-!.gitignore
-!/src/*
+*.txt
+
+*.properties
+
+*.sbt
+
+*.DS_Store
+
+projectFilesBackup/
+
+target/
+
+*.idea
