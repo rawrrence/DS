@@ -1,6 +1,7 @@
 package com.pool.networking
 
-class RequestMessage extends java.io.Serializable {
+@SerialVersionUID(1L)
+class RequestMessage extends Serializable {
     var requesterName : String = "Anonymous"
     var requestNode : Node = null
     var startTime : Long = -1
