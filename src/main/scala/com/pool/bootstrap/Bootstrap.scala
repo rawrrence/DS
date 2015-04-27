@@ -70,11 +70,17 @@ class Bootstrap {
             println("Add " + remoteNode.id + " to bootstrap server")
             println("Ip " + remoteNode.ip)
             println("Port " + remoteNode.port)
+            println( "Location: " + remoteNode.latitude.toString + " " + remoteNode.longitude.toString)
+
 
           } else if (msg.flag == 1) {
             config.nodes.remove(remoteNode.id)
             println("Remove " + remoteNode.id + " from bootstrap server")
 
+          } else if (msg.flag == 2) {
+            config.nodes.get(remoteNode.id).latitude = msg.node.latitude
+            config.nodes.get(remoteNode.id).longitude = msg.node.longitude
+            println("Update " + remoteNode.id)
           } else {
             println("BootstrapMessage: wrong flag")
           }

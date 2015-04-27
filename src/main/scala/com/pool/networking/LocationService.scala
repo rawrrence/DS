@@ -12,10 +12,10 @@ import android.util.Log
  */
 class LocationService extends java.io.Serializable {
   var appContext : Context = null
+  var mp : MessagePasser = null
   var locationManager : LocationManager = null
   var locationListener : LocationListener = new LocationListener() {
     def onLocationChanged(location: Location): Unit = {
-
       // Called when a new location is found by the network location provider.
       if (!locationInit) {
         initialLocation = location
@@ -24,6 +24,7 @@ class LocationService extends java.io.Serializable {
       }
       currentLocation = location
       Log.w("Pool", "Got location" + location.getLatitude.toString + " " + location.getLongitude.toString)
+      mp.updateLocation()
     }
 
 
@@ -42,8 +43,8 @@ class LocationService extends java.io.Serializable {
   var initialLocation : Location = null
   var currentLocation : Location = null
 
-  val LOCATION_INTERVAL : Int = 0 //10000 sec
-  val MIN_DISTANCE : Int = 0         //100 m
+  val LOCATION_INTERVAL : Int = 0
+  val MIN_DISTANCE : Int = 0
 
   def this(con : Context) {
     this()
@@ -97,7 +98,6 @@ object LocationService {
       buildAlertMessageNoGps(con);
     }
   }
-
 
   def buildAlertMessageNoGps(con : Context) : Unit = {
     val builder : AlertDialog.Builder = new AlertDialog.Builder(con)
