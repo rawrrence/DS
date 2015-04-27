@@ -33,7 +33,7 @@ class Home extends Activity {
   override def onCreate(savedInstanceState:Bundle) : Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.home)
-    getWindow().getDecorView().setBackgroundColor(Color.LTGRAY)
+    getWindow().getDecorView().setBackgroundColor(Color.rgb(61,164,255))
 
     requestButton = findViewById(R.id.home_request_button).asInstanceOf[Button]
     workButton = findViewById(R.id.home_work_button).asInstanceOf[Button]
