@@ -80,7 +80,7 @@ class LocationService extends java.io.Serializable {
       loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
     } else if (isNetworkOn) {
       loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-    } 
+    }
 
     return loc
   }

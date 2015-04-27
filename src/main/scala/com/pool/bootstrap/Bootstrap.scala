@@ -81,6 +81,8 @@ class Bootstrap {
             config.nodes.get(remoteNode.id).latitude = msg.node.latitude
             config.nodes.get(remoteNode.id).longitude = msg.node.longitude
             println("Update " + remoteNode.id)
+            println( "Location: " + remoteNode.latitude.toString + " " + remoteNode.longitude.toString)
+
           } else {
             println("BootstrapMessage: wrong flag")
           }
