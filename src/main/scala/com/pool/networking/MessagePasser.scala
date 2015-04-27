@@ -73,7 +73,7 @@ class MessagePasser {
 
     //connect to bootstrap server
     try {
-      sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), 500)
+      sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), 3000)
     } catch {
       case e: Exception => println("Error connecting to bootstrap server: " + e)
     }
@@ -110,7 +110,7 @@ class MessagePasser {
 
     //connect to bootstrap server
     try {
-      sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), 10)
+      sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), 3000)
     } catch {
       case e: Exception => println("Error connecting to bootstrap server: " + e)
     }
