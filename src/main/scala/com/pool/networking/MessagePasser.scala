@@ -48,13 +48,12 @@ class MessagePasser {
     Log.w("Pool", "Before bootstrap")
     bootstrap(localName, localPort)
     Log.w("Pool", "After bootstrap")
+
     receivedRequests = new util.LinkedList[Message]()
     receivedReplies = new util.LinkedList[Message]()
     pendingWork = new util.LinkedList[Message]()
     pendingService = new util.LinkedList[Message]()
     sentRequests = new util.ArrayList[Message]()
-
-    bootstrap(localName, localPort)
 
     //start connecting
     val nodeList = new util.ArrayList[Integer](config.nodes.keySet)
