@@ -45,7 +45,7 @@ class Home extends Activity {
     showButton.setOnClickListener(showClicked)
 
     // Create and start the service
-    doStartAndBindService()
+    //doStartAndBindService()
   }
 
   override def onDestroy(): Unit = {

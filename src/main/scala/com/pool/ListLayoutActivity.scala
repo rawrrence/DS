@@ -5,11 +5,32 @@ import android.app.ListActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView.OnItemClickListener
+import android.os.{IBinder, Bundle}
+import android.content.{Context, ComponentName, ServiceConnection, Intent}
 import android.widget.{AdapterView, ArrayAdapter, TextView, Toast}
 import com.pool.networking.Message
 
 
 class ListLayoutActivity extends ListActivity {
+
+  var mIsBound : Boolean = false
+  var mBoundService : NetworkService = null
+  var mConnection : ServiceConnection = new ServiceConnection() {
+    def onServiceConnected(className : ComponentName, service : IBinder) : Unit = {
+      mBoundService = service.asInstanceOf[NetworkService#LocalBinder].getService()
+    }
+    def onServiceDisconnected(className : ComponentName): Unit = {
+      mBoundService = null
+    }
+  }
+
+  def doStartAndBindService(): Unit = {
+    startService(new Intent(this, classOf[NetworkService]))
+    bindService(new Intent(this, classOf[NetworkService]), mConnection, Context.BIND_AUTO_CREATE)
+    mIsBound = true
+  }
+
+
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
 
@@ -33,5 +54,13 @@ class ListLayoutActivity extends ListActivity {
         ).show()
       }
     })
+
+    doStartAndBindService()
+  }
+
+  override def onDestroy(): Unit = {
+    super.onDestroy()
+    unbindService(mConnection)
+    mIsBound = false
   }
 }
