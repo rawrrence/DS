@@ -3,13 +3,14 @@ package com.pool.networking
 /**
  * Created by Lawrence on 4/15/15.
  */
-class Node extends java.io.Serializable {
+@SerialVersionUID(1L)
+class Node extends Serializable {
   var id : Int = -1
   var name : String = null
   var ip : String = null
   var port : Integer = null
-  var longitude : Float = 0
-  var latitude : Float = 0
+  var longitude : Double = 0
+  var latitude : Double = 0
 
   def this(name : String, ip : String, port : Integer) {
     this()
@@ -19,7 +20,7 @@ class Node extends java.io.Serializable {
     this.port = port
   }
 
-  def this(name : String, ip : String, port : Integer, longitude : Float, latitude : Float) {
+  def this(name : String, ip : String, port : Integer, latitude : Double, longitude : Double) {
     this()
     this.id = id
     this.name = name
