@@ -3,8 +3,7 @@ package com.pool.networking
 /**
  * Created by Lawrence on 4/15/15.
  */
-@SerialVersionUID(1000L)
-class Node extends Serializable {
+class Node extends java.io.Serializable {
   var id : Int = -1
   var name : String = null
   var ip : String = null

@@ -10,7 +10,7 @@ import android.util.Log
  * Created by StevW on 4/26/15.
  * Not a anrdoid service because we want to embed it inside networkService
  */
-class LocationService extends Serializable {
+class LocationService extends java.io.Serializable {
   var appContext : Context = null
   var locationManager : LocationManager = null
   var locationListener : LocationListener = new LocationListener() {
