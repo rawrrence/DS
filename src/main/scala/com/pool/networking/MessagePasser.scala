@@ -5,18 +5,29 @@ import java.net._
 import java.util
 import java.util._
 import android.util.Log
+import java.util.Collections
 
 /**
  * Created by Lawrence on 4/15/15.
  */
 class MessagePasser {
+
+  val Request : String = "REQUEST"
+  val Reply : String = "REPLY"
+  val Cancel : String = "CANCEL"
+
+  var currentSeqNum = 0
   var self : Node = null
   var bootstrapServer : String = null
   var bootstrapPort : Int = -1
   var config : Configuration = null
-  var conns : HashMap[Integer, Socket] = null
-  var oosMap : HashMap[Integer, ObjectOutputStream] = null
-  var receiveQueue : util.LinkedList[Message] = null
+  var conns : util.HashMap[Integer, Socket] = null
+  var oosMap : util.HashMap[Integer, ObjectOutputStream] = null
+  var receivedRequests : util.LinkedList[Message] = null
+  var receivedReplies : util.LinkedList[Message] = null
+  var pendingWork = util.LinkedList[Message] = null
+  var pendingService = util.LinkedList[Message] = null
+  var sentRequests = util.ArrayList[Message] = null
 
   def this(localName : String, localPort : String, bootstrapServer : String, bootstrapPort : String) {
     this()
@@ -30,6 +41,13 @@ class MessagePasser {
     Log.w("Pool", "Before bootstrap")
     bootstrap(localName, localPort)
     Log.w("Pool", "After bootstrap")
+    receivedRequests = new util.LinkedList[Message]()
+    receivedReplies = new util.LinkedList[Message]()
+    pendingWork = new util.LinkedList[Message]()
+    pendingService = new util.LinkedList[Message]()
+    sentRequests = new util.ArrayList[Message]()
+
+    bootstrap(localName, localPort)
 
     //start connecting
     val nodeList = new util.ArrayList[Integer](config.nodes.keySet)
@@ -112,13 +130,16 @@ class MessagePasser {
   def send(msg : Message, dest : Int): Unit = {
     if (conns.get(dest) == null) {
       println("Destination does not exist: " + dest)
-      return;
+      return
     }
     msg.src = this.self.id
     deliver(msg, dest)
   }
 
   def broadcast(msg : Message): Unit = {
+    msg.seqNum = currentSeqNum
+    currentSeqNum = currentSeqNum + 1
+    sentRequests.add(msg)
     val keys = conns.keySet()
     val it = keys.iterator()
     while(it.hasNext) {
@@ -206,8 +227,15 @@ class MessagePasser {
       println("Connection established with " + remoteNodeId)
       while (connectionOpen) try {
         msg = ois.readObject().asInstanceOf[Message]
-        println(msg.text)
-        receiveQueue.add(msg)
+        if (msg.mType.equals(Request)) {
+          receivedRequests.add(msg);
+        }
+        if (msg.mType.equals(Reply)) {
+          receivedReplies.add(msg)
+        }
+        if (msg.mType.equals(Cancel)) {
+            findAndRemoveRequest(msg)
+        }
       } catch {
         case e: ClassNotFoundException => ;
         case e: IOException => handleIOException(remoteNodeId)
@@ -251,11 +279,36 @@ class MessagePasser {
           conns.put(remoteNode.id, newConn)
           oosMap.put(remoteNode.id, new ObjectOutputStream(newConn.getOutputStream()))
 
-          var listener : Listener = new Listener(mp, ois, remoteNode.id)
+          val listener : Listener = new Listener(mp, ois, remoteNode.id)
           new Thread(listener).start()
         } catch {
           case e: IOException => ;
         }
+      }
+    }
+  }
+
+  def findAndRemoveRequest(msg : Message): Unit = {
+    val it = receivedRequests.iterator()
+    while(it.hasNext) {
+      val m = it.next()
+      if (m.src == msg.src && m.seqNum == msg.seqNum) {
+        receivedRequests.remove(m)
+        if (msg.text.equals(self.name)) {
+          pendingWork.add(m)
+        }
+      }
+    }
+  }
+
+  def acceptReply(msg : Message): Unit = {
+    val it = sentRequests.iterator()
+    while(it.hasNext) {
+      val m = it.next()
+      if (m.seqNum == msg.seqNum) {
+        m.dest = msg.src
+        pendingService.add(m)
+        sentRequests.remove(m)
       }
     }
   }

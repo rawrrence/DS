@@ -8,6 +8,7 @@ class Message extends java.io.Serializable {
   var dest : Int = -1
   var mType : String = null
   var text : String = null
+  var seqNum : Int = -1
 
   def this(src : Int, dest : Int, text : String) {
     this()

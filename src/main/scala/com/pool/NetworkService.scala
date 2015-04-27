@@ -25,7 +25,7 @@ class NetworkService extends Service {
   override def onCreate(): Unit = {
     // TODO: instantiate MessagePasser
     Log.w("Pool", "Service is starting")
-    mp = new MessagePasser("name", "10001", "128.237.223.96", "10000")
+    mp = new MessagePasser("name", "10001", "192.168.0.103", "10000")
   }
 
   override def onBind(intent : Intent) : IBinder = {
