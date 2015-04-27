@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pool</string>
+    <string name="home_work_button">I am looking for work..</string>
+    <string name="home_request_button">I am looking for help..</string>
+</resources>
