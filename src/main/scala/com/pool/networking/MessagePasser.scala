@@ -36,7 +36,6 @@ class MessagePasser {
     this.bootstrapPort = bootstrapPort.toInt
     conns = new util.HashMap[Integer, Socket]()
     oosMap = new util.HashMap[Integer, ObjectOutputStream]()
-    receiveQueue = new util.LinkedList[Message]()
 
     Log.w("Pool", "Before bootstrap")
     bootstrap(localName, localPort)
