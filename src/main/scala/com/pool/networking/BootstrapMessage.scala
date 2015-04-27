@@ -3,6 +3,7 @@ package com.pool.networking
 /**
  * Created by StevW on 4/20/15.
  */
+
 @SerialVersionUID(1L)
 class BootstrapMessage(n : Node, f : Int) extends Serializable {
   var node : Node = n

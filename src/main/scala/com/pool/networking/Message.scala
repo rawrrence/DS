@@ -3,7 +3,8 @@ package com.pool.networking
 /**
  * Created by Lawrence on 4/15/15.
  */
-class Message extends java.io.Serializable {
+@SerialVersionUID(1L)
+class Message extends Serializable {
   var src : Int = -1
   var dest : Int = -1
   var mType : String = null
