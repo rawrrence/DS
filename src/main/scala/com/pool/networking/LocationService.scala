@@ -82,6 +82,10 @@ class LocationService extends java.io.Serializable {
       loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
     }
 
+    if (loc == null) {
+      loc = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
+    }
+
     return loc
   }
 

@@ -2,6 +2,7 @@ package com.pool
 
 
 import android.app.ListActivity
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView.OnItemClickListener
@@ -19,10 +20,10 @@ class ListLayoutActivity extends ListActivity {
     def onServiceConnected(className : ComponentName, service : IBinder) : Unit = {
       mBoundService = service.asInstanceOf[NetworkService#LocalBinder].getService()
 
-      var requestsArr = Array("Below are the requests you received")
+      var requestsArr = Array("The requests you've received are shown below")
 
       for(i <- 0 to mBoundService.mp.receivedRequests.size() - 1){
-        requestsArr = requestsArr :+ mBoundService.mp.receivedRequests.get(i).text
+        requestsArr = requestsArr :+ mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).text
       }
 
       setListAdapter(new ArrayAdapter[String](ListLayoutActivity.this, R.layout.list_item, requestsArr))
@@ -33,9 +34,13 @@ class ListLayoutActivity extends ListActivity {
         override def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
           Toast.makeText(
             getApplicationContext(),
-            view.asInstanceOf[TextView].getText(),
+            "Go to detailed view",
             Toast.LENGTH_SHORT
           ).show()
+
+          val intent : Intent = new Intent(getApplicationContext(), classOf[RequestDetail])
+          intent.putExtra("content", view.asInstanceOf[TextView].getText())
+          startActivity(intent)
         }
       })
     }
@@ -52,7 +57,7 @@ class ListLayoutActivity extends ListActivity {
 
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
-
+    getWindow().getDecorView().setBackgroundColor(Color.rgb(0,73,105))
     doBindService()
 
   }
