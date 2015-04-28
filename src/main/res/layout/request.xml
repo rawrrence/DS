@@ -20,21 +20,42 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Description:  "
-                android:id="@+id/request_descrp_label" android:paddingLeft="10dp"/>
+                android:text="Description:"
+                android:id="@+id/request_descrp_label" android:textSize="15sp"
+                android:layout_weight=".05"/>
         <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
                 android:id="@+id/request_descrp_text" android:layout_weight="1"/>
     </LinearLayout>
-    <DatePicker
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/datePicker" android:layout_gravity="center_horizontal"/>
-    <TimePicker
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/timePicker" android:layout_gravity="center_horizontal"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:textAppearance="?android:attr/textAppearanceSmall" android:text="End Date:"
+                  android:id="@+id/textView" android:paddingLeft="10dp" android:textSize="15sp"
+                  android:layout_weight=".05"/>
+        <DatePicker
+                android:layout_width="wrap_content"
+                style="@android:style/Widget.DatePicker"
+                android:layout_height="wrap_content"
+                android:id="@+id/datePicker" android:layout_gravity="center_horizontal" android:layout_weight=".9"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:textAppearance="?android:attr/textAppearanceSmall" android:text="End Time: "
+                  android:id="@+id/textView5" android:paddingLeft="10dp" android:textSize="15sp"
+                  android:layout_weight=".05"/>
+        <TimePicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/timePicker" android:layout_gravity="center_horizontal" android:layout_weight=".9"/>
+    </LinearLayout>
     <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
