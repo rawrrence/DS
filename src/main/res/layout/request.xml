@@ -10,8 +10,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="30dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Looking For Help"
-            android:id="@+id/request_title" android:layout_gravity="center_horizontal"/>
+            android:text="Send Out A Request"
+            android:id="@+id/request_title" android:layout_gravity="center_horizontal" android:textSize="25sp"/>
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -27,6 +27,14 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/request_descrp_text" android:layout_weight="1"/>
     </LinearLayout>
+    <DatePicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/datePicker" android:layout_gravity="center_horizontal"/>
+    <TimePicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/timePicker" android:layout_gravity="center_horizontal"/>
     <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

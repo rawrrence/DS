@@ -39,17 +39,15 @@ class Home extends Activity {
   override def onCreate(savedInstanceState:Bundle) : Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.home)
-    getWindow().getDecorView().setBackgroundColor(Color.rgb(61,164,255))
+    getWindow().getDecorView().setBackgroundColor(Color.rgb(0,73,105))
 
     requestButton = findViewById(R.id.home_request_button).asInstanceOf[Button]
     workButton = findViewById(R.id.home_work_button).asInstanceOf[Button]
-    showButton = findViewById(R.id.home_show_requests_button).asInstanceOf[Button]
 
 
     requestButton.setOnClickListener(requestClicked)
     workButton.setOnClickListener(workClicked)
-    showButton.setOnClickListener(showClicked)
-    
+
     // Create and start the service
     doStartAndBindService()
   }

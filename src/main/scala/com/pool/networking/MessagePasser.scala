@@ -52,7 +52,7 @@ class MessagePasser {
     var bootstrap : Bootstrapper = new Bootstrapper(localName, localPort)
     new Thread(bootstrap).start()
     while (bootstrapDone == false) {
-      
+
     }
     Log.w("Pool", "After bootstrap")
 

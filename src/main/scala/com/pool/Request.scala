@@ -38,7 +38,7 @@ class Request extends Activity {
   override def onCreate(savedInstanceState:Bundle) : Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.request)
-    getWindow().getDecorView().setBackgroundColor(Color.WHITE)
+    getWindow().getDecorView().setBackgroundColor(Color.rgb(0,73,105))
 
     sendButton = findViewById(R.id.request_send_button).asInstanceOf[Button]
     descrpText = findViewById(R.id.request_descrp_text).asInstanceOf[TextView]
