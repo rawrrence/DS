@@ -49,7 +49,11 @@ class MessagePasser {
     oosMap = new util.HashMap[Integer, ObjectOutputStream]()
 
     Log.w("Pool", "Before bootstrap")
-    bootstrap(localName, localPort)
+    var bootstrap : Bootstrapper = new Bootstrapper(localName, localPort)
+    new Thread(bootstrap).start()
+    while (bootstrapDone == false) {
+      
+    }
     Log.w("Pool", "After bootstrap")
 
     receivedRequests = new util.LinkedList[Message]()
@@ -70,70 +74,77 @@ class MessagePasser {
     new Thread(server).start()
   }
 
-  /**
-   * retrive configuration from bootstrap server
-   * @param localName
-   * @param localPort
-   */
-  def bootstrap(localName : String, localPort : String): Unit = {
-    var loc : Location = locationService.getLocation()
-    while (loc == null) {
-      loc = locationService.getLocation()
-    }
-    Log.w("Pool", "Bootstraping:")
-    Log.w("Pool", "Initial location: " + loc.getLatitude() + " " + loc.getLongitude())
+  class Bootstrapper extends Runnable {
 
-    //create self node
-    val tmpNode: Node = new Node(localName, null, localPort.toInt, loc.getLatitude(), loc.getLongitude()) //no way to know my public ip
+    var localName : String = null
+    var localPort : String = null
 
-    val sock: Socket = new Socket()
-
-    Log.w("Pool", "connecting to bootsrap")
-    //connect to bootstrap server
-    try {
-      sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
-    } catch {
-      case e: Exception => Log.w("Pool", "Error connecting to bootstrap server: " + e)
+    def this(localName : String, localPort : String) {
+      this()
+      this.localName = localName
+      this.localPort = localPort
     }
 
-    Log.w("Pool", "sending info to bootsrap")
-    //send my info
-    try {
-      val os = new ObjectOutputStream(sock.getOutputStream)
-      os.writeObject(new BootstrapMessage(tmpNode, 0)) //0 for init
-    } catch {
-      case e: Exception => Log.w("Pool", "Error sending info to bootstrap server: " + e)
-    }
-
-    Log.w("Pool", "receiving info from bootsrap")
-    //receive bootstrap info
-    try {
-      val is: ObjectInputStream = new ObjectInputStream(sock.getInputStream)
-      self = is.readObject().asInstanceOf[Node]
-      config = is.readObject().asInstanceOf[Configuration]
-
-      Log.w("Pool", "My id is:" + self.id)
-    } catch {
-      case e: Exception => Log.w("Pool", "Error receiving info from bootstrap server: " + e)
-    }
-
-    sock.close()
-
-    //filter nodes using location
-    val itr = config.nodes.keySet().iterator()
-    while (itr.hasNext()) {
-      val key = itr.next
-      val node = config.nodes.get(key)
-      var result = new Array[Float](1)
-      Location.distanceBetween(node.latitude, node.longitude, self.latitude, self.longitude, result)
-
-      Log.w("Pool", "Distance with " + key + " is " + result(0))
-      if (result(0) > MAX_DISTANCE) {
-        itr.remove()
+    override def run(): Unit = {
+      var loc : Location = locationService.getLocation()
+      while (loc == null) {
+        loc = locationService.getLocation()
       }
-    }
+      Log.w("Pool", "Bootstraping:")
+      Log.w("Pool", "Initial location: " + loc.getLatitude() + " " + loc.getLongitude())
 
-    bootstrapDone = true
+      //create self node
+      val tmpNode: Node = new Node(localName, null, localPort.toInt, loc.getLatitude(), loc.getLongitude()) //no way to know my public ip
+
+      val sock: Socket = new Socket()
+
+      Log.w("Pool", "connecting to bootsrap")
+      //connect to bootstrap server
+      try {
+        sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
+      } catch {
+        case e: Exception => Log.w("Pool", "Error connecting to bootstrap server: " + e)
+      }
+
+      Log.w("Pool", "sending info to bootsrap")
+      //send my info
+      try {
+        val os = new ObjectOutputStream(sock.getOutputStream)
+        os.writeObject(new BootstrapMessage(tmpNode, 0)) //0 for init
+      } catch {
+        case e: Exception => Log.w("Pool", "Error sending info to bootstrap server: " + e)
+      }
+
+      Log.w("Pool", "receiving info from bootsrap")
+      //receive bootstrap info
+      try {
+        val is: ObjectInputStream = new ObjectInputStream(sock.getInputStream)
+        self = is.readObject().asInstanceOf[Node]
+        config = is.readObject().asInstanceOf[Configuration]
+
+        Log.w("Pool", "My id is:" + self.id)
+      } catch {
+        case e: Exception => Log.w("Pool", "Error receiving info from bootstrap server: " + e)
+      }
+
+      sock.close()
+
+      //filter nodes using location
+      val itr = config.nodes.keySet().iterator()
+      while (itr.hasNext()) {
+        val key = itr.next
+        val node = config.nodes.get(key)
+        var result = new Array[Float](1)
+        Location.distanceBetween(node.latitude, node.longitude, self.latitude, self.longitude, result)
+
+        Log.w("Pool", "Distance with " + key + " is " + result(0))
+        if (result(0) > MAX_DISTANCE) {
+          itr.remove()
+        }
+      }
+
+      bootstrapDone = true
+    }
   }
 
   /**
