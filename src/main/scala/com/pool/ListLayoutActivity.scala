@@ -22,7 +22,7 @@ class ListLayoutActivity extends ListActivity {
       var requestsArr = Array("Below are the requests you received")
 
       for(i <- 0 to mBoundService.mp.receivedRequests.size() - 1){
-        requestsArr +:= mBoundService.mp.receivedRequests.get(i).text
+        requestsArr = requestsArr +: mBoundService.mp.receivedRequests.get(i).text
       }
 
       setListAdapter(new ArrayAdapter[String](ListLayoutActivity.this, R.layout.list_item, requestsArr))
