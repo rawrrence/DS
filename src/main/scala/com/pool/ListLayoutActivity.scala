@@ -22,7 +22,7 @@ class ListLayoutActivity extends ListActivity {
       var requestsArr = Array("Below are the requests you received")
 
       for(i <- 0 to mBoundService.mp.receivedRequests.size() - 1){
-        requestsArr +:= mBoundService.mp.receivedRequests.get(i).text
+        requestsArr = requestsArr :+ mBoundService.mp.receivedRequests.get(i).text
       }
 
       setListAdapter(new ArrayAdapter[String](ListLayoutActivity.this, R.layout.list_item, requestsArr))
@@ -54,15 +54,6 @@ class ListLayoutActivity extends ListActivity {
     super.onCreate(savedInstanceState)
 
     doBindService()
-
-
-    var m1 : Message = new Message(1, 1, "request from Jack")
-    var m2 : Message = new Message(2, 2, "request from Rose")
-    var m3 : Message = new Message(3, 3, "request from Eggplant")
-
-    var mArr = Array(m1.text, m2.text, m3.text)
-
-
 
   }
 
