@@ -34,9 +34,13 @@ class ListLayoutActivity extends ListActivity {
         override def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
           Toast.makeText(
             getApplicationContext(),
-            view.asInstanceOf[TextView].getText(),
+            "Go to detailed view",
             Toast.LENGTH_SHORT
           ).show()
+
+          val intent : Intent = new Intent(getApplicationContext(), classOf[RequestDetail])
+          intent.putExtra("content", view.asInstanceOf[TextView].getText())
+          startActivity(intent)
         }
       })
     }
