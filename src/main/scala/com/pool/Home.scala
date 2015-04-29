@@ -8,11 +8,14 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.{Button, MultiAutoCompleteTextView}
 import com.pool.networking.LocationService
+import com.pool._
+
 
 class Home extends Activity {
   var requestButton : Button = null
   var workButton : Button = null
   var showButton : Button = null
+  var chatButton : Button = null
 
   var mIsBound : Boolean = false
   var mBoundService : NetworkService = null
@@ -43,10 +46,11 @@ class Home extends Activity {
 
     requestButton = findViewById(R.id.home_request_button).asInstanceOf[Button]
     workButton = findViewById(R.id.home_work_button).asInstanceOf[Button]
-
+    chatButton = findViewById(R.id.chat_button).asInstanceOf[Button]
 
     requestButton.setOnClickListener(requestClicked)
     workButton.setOnClickListener(workClicked)
+    chatButton.setOnClickListener(chatClicked)
 
     // Create and start the service
     doStartAndBindService()
@@ -78,6 +82,12 @@ class Home extends Activity {
     }
   }
 
+  var chatClicked : OnClickListener = new OnClickListener() {
+    override def onClick(v : View): Unit = {
+      val intent : Intent = new Intent(getApplicationContext(), classOf[ChatListActivity])
+      startActivity(intent)
+    }
+  }
 
   var showClicked : OnClickListener = new OnClickListener {
     override def onClick(v: View): Unit = {

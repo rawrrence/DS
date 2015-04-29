@@ -3,4 +3,5 @@
     <string name="app_name">Pool</string>
     <string name="home_work_button">I am looking for work..</string>
     <string name="home_request_button">I am looking for help..</string>
+    <string name="chat_button">Chat</string>
 </resources>

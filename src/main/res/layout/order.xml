@@ -21,10 +21,19 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/orderDetails" />
 
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:ems="10"
+                android:id="@+id/editText6"
+                android:layout_gravity="center_horizontal"
+                android:text="Interested in it? Do a quick reply!" />
+
         <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Take it!"
+                android:text="Send"
                 android:id="@+id/button"
                 android:layout_gravity="center_horizontal"
                 />
