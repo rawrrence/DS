@@ -370,6 +370,19 @@ class MessagePasser {
     }
   }
 
+  Class HeartbeatSender extends Runnable {
+    var mp : MessagePasser = null;
+
+    def this(mp : MessagePasser) {
+      this()
+      this.mp = mp
+    }
+
+    override def run(): Unit = {
+      
+    }
+  }
+
   def findAndRemoveRequest(msg : Message): Unit = {
     val it = receivedRequests.iterator()
     while(it.hasNext) {
