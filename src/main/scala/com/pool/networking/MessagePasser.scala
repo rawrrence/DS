@@ -56,6 +56,10 @@ class MessagePasser {
     //while (bootstrapDone == false) {}
     Log.w("Pool", "After bootstrap")
 
+    //start sending heartbeat messages
+    var hb : HeartbeatSender = new HeartbeatSender(this)
+    new Thread(hb).start()
+
     receivedRequests = new util.LinkedList[Message]()
     receivedReplies = new util.LinkedList[Message]()
     pendingWork = new util.LinkedList[Message]()
@@ -127,6 +131,8 @@ class MessagePasser {
           }
         }
       } while (!pass)
+
+
 
       //filter nodes using location
       val itr = config.nodes.keySet().iterator()
@@ -405,6 +411,45 @@ class MessagePasser {
         } catch {
           case e: IOException => ;
         }
+      }
+    }
+  }
+
+  class HeartbeatSender extends Runnable {
+    var mp : MessagePasser = null;
+
+    val maxAttempts = 2;
+
+    def this(mp : MessagePasser) {
+      this()
+      this.mp = mp
+    }
+
+    override def run(): Unit = {
+      while (true) {
+        var pass = true
+        var attempt = 0
+        do {
+          attempt += 1
+          pass = true
+          try {
+            val sock: Socket = new Socket()
+
+            Log.w("Pool", "Attempting to send a heartbeat message to bootstrap")
+            sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
+
+            val os = new ObjectOutputStream(sock.getOutputStream)
+            os.writeObject(new BootstrapMessage(self, 3)) // 3 for heartbeat
+
+            sock.close()
+          } catch {
+            case e: Exception => {
+              Log.w("Pool", "Sending heartbeat unsuccessful, retrying: " + e)
+              pass = false
+            }
+          }
+        } while (attempt < maxAttempts)
+      Thread.sleep(2000)
       }
     }
   }
