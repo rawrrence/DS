@@ -87,7 +87,6 @@ class Bootstrap {
             println("BootstrapMessage: wrong flag")
           }
 
-
         } catch {
           case e: IOException => println("Bootstrap: " + e)
         }
