@@ -1,18 +1,16 @@
 package com.pool
 
-
 import android.app.ListActivity
+import android.content.{ComponentName, Context, Intent, ServiceConnection}
 import android.graphics.Color
-import android.os.Bundle
+import android.os.{Bundle, IBinder}
 import android.view.View
 import android.widget.AdapterView.OnItemClickListener
-import android.os.{IBinder, Bundle}
-import android.content.{Context, ComponentName, ServiceConnection, Intent}
 import android.widget.{AdapterView, ArrayAdapter, TextView, Toast}
-import com.pool.networking.Message
+import com.pool.ListRequests
 
 
-class ListLayoutActivity extends ListActivity {
+class ListReplies extends ListActivity {
 
   var mIsBound : Boolean = false
   var mBoundService : NetworkService = null
@@ -20,13 +18,13 @@ class ListLayoutActivity extends ListActivity {
     def onServiceConnected(className : ComponentName, service : IBinder) : Unit = {
       mBoundService = service.asInstanceOf[NetworkService#LocalBinder].getService()
 
-      var requestsArr = Array("The requests you've received are shown below")
+      var repliesArr = Array("The requests you've received are shown below")
 
-      for(i <- 0 to mBoundService.mp.receivedRequests.size() - 1){
-        requestsArr = requestsArr :+ mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).text
+      for(i <- 0 to mBoundService.mp.receivedReplies.size() - 1){
+        repliesArr = repliesArr :+ mBoundService.mp.receivedReplies.get(mBoundService.mp.receivedReplies.size() - 1 - i).text
       }
 
-      setListAdapter(new ArrayAdapter[String](ListLayoutActivity.this, R.layout.list_item, requestsArr))
+      setListAdapter(new ArrayAdapter[String](ListReplies.this, R.layout.list_replies, repliesArr))
       val lv = getListView()
       lv.setTextFilterEnabled(true)
 
