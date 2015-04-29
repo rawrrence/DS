@@ -448,7 +448,7 @@ class MessagePasser {
               pass = false
             }
           }
-        } while (attempt < maxAttempts)
+        } while (pass && attempt < maxAttempts)
       Thread.sleep(2000)
       }
     }
