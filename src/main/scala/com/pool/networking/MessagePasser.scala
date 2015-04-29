@@ -449,6 +449,7 @@ class MessagePasser {
             }
           }
         } while (attempt < maxAttempts)
+      Thread.sleep(2000)
       }
     }
   }
