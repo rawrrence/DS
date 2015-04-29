@@ -38,7 +38,7 @@ class NetworkService extends Service {
     Log.w("Pool", "Service is starting")
 
     locationService = new LocationService(this.getApplicationContext)
-    mp = new MessagePasser(locationService, "name", "10001", "128.237.118.64", "10000")
+    mp = new MessagePasser(locationService, "name", "10001", "pool842.ddns.net", "10001")
 
     return Service.START_STICKY
   }

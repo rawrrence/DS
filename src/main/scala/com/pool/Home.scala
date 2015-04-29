@@ -54,7 +54,6 @@ class Home extends Activity {
 
   override def onResume(): Unit = {
     super.onResume()
-
   }
 
   override def onDestroy(): Unit = {

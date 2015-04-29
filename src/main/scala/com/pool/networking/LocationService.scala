@@ -43,8 +43,8 @@ class LocationService extends java.io.Serializable {
   var initialLocation : Location = null
   var currentLocation : Location = null
 
-  val LOCATION_INTERVAL : Int = 0
-  val MIN_DISTANCE : Int = 0
+  val LOCATION_INTERVAL : Int = 30
+  val MIN_DISTANCE : Int = 10
 
   def this(con : Context) {
     this()

@@ -50,10 +50,10 @@ class MessagePasser {
 
     Log.w("Pool", "Before bootstrap")
     var bootstrap : Bootstrapper = new Bootstrapper(localName, localPort)
-    new Thread(bootstrap).start()
-    while (bootstrapDone == false) {
-
-    }
+    var thr : Thread = new Thread(bootstrap)
+    thr.start
+    thr.join
+    //while (bootstrapDone == false) {}
     Log.w("Pool", "After bootstrap")
 
     receivedRequests = new util.LinkedList[Message]()
@@ -86,7 +86,7 @@ class MessagePasser {
     }
 
     override def run(): Unit = {
-      var loc : Location = locationService.getLocation()
+      var loc: Location = locationService.getLocation()
       while (loc == null) {
         loc = locationService.getLocation()
       }
@@ -95,39 +95,38 @@ class MessagePasser {
 
       //create self node
       val tmpNode: Node = new Node(localName, null, localPort.toInt, loc.getLatitude(), loc.getLongitude()) //no way to know my public ip
+      var pass = true
+      do {
+        pass = true
+        try {
+          val sock: Socket = new Socket()
 
-      val sock: Socket = new Socket()
+          Log.w("Pool", "connecting to bootsrap")
+          //connect to bootstrap server
+          sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
 
-      Log.w("Pool", "connecting to bootsrap")
-      //connect to bootstrap server
-      try {
-        sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
-      } catch {
-        case e: Exception => Log.w("Pool", "Error connecting to bootstrap server: " + e)
-      }
 
-      Log.w("Pool", "sending info to bootsrap")
-      //send my info
-      try {
-        val os = new ObjectOutputStream(sock.getOutputStream)
-        os.writeObject(new BootstrapMessage(tmpNode, 0)) //0 for init
-      } catch {
-        case e: Exception => Log.w("Pool", "Error sending info to bootstrap server: " + e)
-      }
+          Log.w("Pool", "sending info to bootsrap")
+          //send my info
+          val os = new ObjectOutputStream(sock.getOutputStream)
+          os.writeObject(new BootstrapMessage(tmpNode, 0)) //0 for init
 
-      Log.w("Pool", "receiving info from bootsrap")
-      //receive bootstrap info
-      try {
-        val is: ObjectInputStream = new ObjectInputStream(sock.getInputStream)
-        self = is.readObject().asInstanceOf[Node]
-        config = is.readObject().asInstanceOf[Configuration]
+          Log.w("Pool", "receiving info from bootsrap")
+          //receive bootstrap info
+          val is: ObjectInputStream = new ObjectInputStream(sock.getInputStream)
+          self = is.readObject().asInstanceOf[Node]
+          config = is.readObject().asInstanceOf[Configuration]
 
-        Log.w("Pool", "My id is:" + self.id)
-      } catch {
-        case e: Exception => Log.w("Pool", "Error receiving info from bootstrap server: " + e)
-      }
+          Log.w("Pool", "My id is:" + self.id)
 
-      sock.close()
+          sock.close()
+        } catch {
+          case e: Exception => {
+            Log.w("Pool", "Error bootstrapping, retrying: " + e)
+            pass = false
+          }
+        }
+      } while (!pass)
 
       //filter nodes using location
       val itr = config.nodes.keySet().iterator()
@@ -147,66 +146,106 @@ class MessagePasser {
     }
   }
 
+  class LocationUpdater extends Runnable {
+
+    var localName : String = null
+    var localPort : String = null
+
+    def this(localName : String, localPort : String) {
+      this()
+      this.localName = localName
+      this.localPort = localPort
+    }
+
+    override def run(): Unit = {
+      if (!bootstrapDone) return
+
+      var loc : Location = locationService.getLocation()
+      Log.w("Pool", "Updating:")
+      Log.w("Pool", "Update location: " + loc.getLatitude() + " " + loc.getLongitude())
+
+      //update self node
+      self.latitude = loc.getLatitude
+      self.longitude = loc.getLongitude
+
+      val sock: Socket = new Socket()
+
+      Log.w("Pool", "connecting to bootsrap")
+      //connect to bootstrap server
+      try {
+        sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
+      } catch {
+        case e: Exception => Log.w("Pool", "Error connecting to bootstrap server: " + e)
+      }
+
+      Log.w("Pool", "sending info to bootsrap")
+      //send my info
+      try {
+        val os = new ObjectOutputStream(sock.getOutputStream)
+        os.writeObject(new BootstrapMessage(self, 2)) //0 for init
+      } catch {
+        case e: Exception => Log.w("Pool", "Error sending info to bootstrap server: " + e)
+      }
+
+      sock.close()
+    }
+  }
+
+  class ExitUpdater extends Runnable {
+
+    var localName : String = null
+    var localPort : String = null
+
+    def this(localName : String, localPort : String) {
+      this()
+      this.localName = localName
+      this.localPort = localPort
+    }
+
+    override def run(): Unit = {
+      if (!bootstrapDone) return
+
+      val sock: Socket = new Socket()
+
+      Log.w("Pool", "Exiting !")
+      //connect to bootstrap server
+      try {
+        sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
+      } catch {
+        case e: Exception => Log.w("Pool", "Error connecting to bootstrap server: " + e)
+      }
+
+      //send my info
+      try {
+        val os = new ObjectOutputStream(sock.getOutputStream)
+        val msg : BootstrapMessage = new BootstrapMessage(self, 1)
+        os.writeObject(msg) //1 for exit
+      } catch {
+        case e: Exception => Log.w("Pool", "Error sending info to bootstrap server: " + e)
+      }
+
+      sock.close()
+    }
+  }
+
   /**
    * inform bootstrap server of location change
    */
   def updateLocation(): Unit = {
-    if (!bootstrapDone) return
-
-    var loc : Location = locationService.getLocation()
-    Log.w("Pool", "Updating:")
-    Log.w("Pool", "Update location: " + loc.getLatitude() + " " + loc.getLongitude())
-
-    //update self node
-    self.latitude = loc.getLatitude
-    self.longitude = loc.getLongitude
-
-    val sock: Socket = new Socket()
-
-    Log.w("Pool", "connecting to bootsrap")
-    //connect to bootstrap server
-    try {
-      sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
-    } catch {
-      case e: Exception => Log.w("Pool", "Error connecting to bootstrap server: " + e)
-    }
-
-    Log.w("Pool", "sending info to bootsrap")
-    //send my info
-    try {
-      val os = new ObjectOutputStream(sock.getOutputStream)
-      os.writeObject(new BootstrapMessage(self, 2)) //0 for init
-    } catch {
-      case e: Exception => Log.w("Pool", "Error sending info to bootstrap server: " + e)
-    }
-
-    sock.close()
+    var updater : LocationUpdater = new LocationUpdater(self.name, self.port.toString)
+    var thr : Thread = new Thread(updater)
+    thr.start
+    thr.join
   }
 
   /**
    * inform bootstrap server before exiting
    */
   def exit(): Unit = {
-    val sock: Socket = new Socket()
-
-    Log.w("Pool", "Exiting !")
-    //connect to bootstrap server
-    try {
-      sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
-    } catch {
-      case e: Exception => Log.w("Pool", "Error connecting to bootstrap server: " + e)
-    }
-
-    //send my info
-    try {
-      val os = new ObjectOutputStream(sock.getOutputStream)
-      val msg : BootstrapMessage = new BootstrapMessage(self, 1)
-      os.writeObject(msg) //1 for exit
-    } catch {
-      case e: Exception => Log.w("Pool", "Error sending info to bootstrap server: " + e)
-    }
-
-    sock.close()
+    var updater : ExitUpdater = new ExitUpdater(self.name, self.port.toString)
+    var thr : Thread = new Thread(updater)
+    thr.start
+    thr.join
   }
 
   def send(msg : Message, dest : Int): Unit = {
