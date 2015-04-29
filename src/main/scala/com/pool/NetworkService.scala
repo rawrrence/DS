@@ -1,5 +1,7 @@
 package com.pool
 
+import java.security.Security
+
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
@@ -24,6 +26,8 @@ class NetworkService extends Service {
 
   override def onCreate(): Unit = {
     //handles initialization in onStartCommand
+    System.setProperty("networkaddress.cache.ttl", "0");
+    Security.setProperty("networkaddress.cache.ttl", "0");
   }
 
   override def onBind(intent : Intent) : IBinder = {
