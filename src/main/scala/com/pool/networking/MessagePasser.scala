@@ -2,6 +2,7 @@ package com.pool.networking
 
 import java.io._
 import java.net._
+import java.security.Security
 import java.util
 import java.util._
 
@@ -19,7 +20,9 @@ class MessagePasser {
 
   var currentSeqNum = 0
   var self : Node = null
-  var bootstrapServer : String = null
+  //var bootstrapServer : String = null
+  var serverList : util.ArrayList[String] = null
+  var curServerIndex = 0
   var bootstrapPort : Int = -1
   var config : Configuration = null
 
@@ -39,11 +42,18 @@ class MessagePasser {
   var sentRequests : util.ArrayList[Message] = null
 
 
-  def this(locationService : LocationService, localName : String, localPort : String, bootstrapServer : String, bootstrapPort : String) {
+  def this(locationService : LocationService, localName : String, localPort : String, serverList : util.ArrayList[String], bootstrapPort : String) {
     this()
+    System.setProperty("networkaddress.cache.ttl", "0")
+    Security.setProperty("networkaddress.cache.ttl", "0")
+    Log.w("Pool", "System dns cache ttl: " + System.getProperty("networkaddress.cache.ttl"))
+    Log.w("Pool", "JAVA dns cache ttl: " + Security.getProperty("networkaddress.cache.ttl"))
+
     this.locationService = locationService
     locationService.mp = this
-    this.bootstrapServer = bootstrapServer
+    //this.bootstrapServer = bootstrapServer
+    this.serverList = serverList
+    this.curServerIndex = (Math.random() * serverList.size).asInstanceOf[Int]
     this.bootstrapPort = bootstrapPort.toInt
     conns = new util.HashMap[Integer, Socket]()
     oosMap = new util.HashMap[Integer, ObjectOutputStream]()
@@ -101,13 +111,14 @@ class MessagePasser {
       val tmpNode: Node = new Node(localName, null, localPort.toInt, loc.getLatitude(), loc.getLongitude()) //no way to know my public ip
       var pass = true
       do {
+        var sock : Socket = null
         pass = true
         try {
-          val sock: Socket = new Socket()
+          sock = new Socket()
 
           Log.w("Pool", "connecting to bootsrap")
           //connect to bootstrap server
-          sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
+          sock.connect(new InetSocketAddress(serverList.get(curServerIndex), bootstrapPort.toInt), TIMEOUT)
 
 
           Log.w("Pool", "sending info to bootsrap")
@@ -128,12 +139,17 @@ class MessagePasser {
           case e: Exception => {
             Log.w("Pool", "Error bootstrapping, retrying: " + e)
             pass = false
+            if (sock != null)
+              sock.close()
+            curServerIndex = (curServerIndex + 1)%serverList.size
+            Thread.sleep(1000)
+
           }
         }
       } while (!pass)
 
 
-
+      /*
       //filter nodes using location
       val itr = config.nodes.keySet().iterator()
       while (itr.hasNext()) {
@@ -147,7 +163,7 @@ class MessagePasser {
           itr.remove()
         }
       }
-
+      */
       bootstrapDone = true
     }
   }
@@ -174,26 +190,32 @@ class MessagePasser {
       self.latitude = loc.getLatitude
       self.longitude = loc.getLongitude
 
-      val sock: Socket = new Socket()
-
-      Log.w("Pool", "connecting to bootsrap")
-      //connect to bootstrap server
+      var sock: Socket = null
       try {
-        sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
-      } catch {
-        case e: Exception => Log.w("Pool", "Error connecting to bootstrap server: " + e)
-      }
+        sock = new Socket()
 
-      Log.w("Pool", "sending info to bootsrap")
-      //send my info
-      try {
+        Log.w("Pool", "connecting to bootsrap")
+        //connect to bootstrap server
+
+        sock.connect(new InetSocketAddress(serverList.get(curServerIndex), bootstrapPort.toInt), TIMEOUT)
+
+
+        Log.w("Pool", "sending info to bootsrap")
+        //send my info
+
         val os = new ObjectOutputStream(sock.getOutputStream)
         os.writeObject(new BootstrapMessage(self, 2)) //0 for init
+
+        sock.close()
       } catch {
-        case e: Exception => Log.w("Pool", "Error sending info to bootstrap server: " + e)
+        case e: Exception =>{
+          Log.w("Pool", "Error updating location: " + e)
+          if (sock != null) sock.close()
+          curServerIndex = (curServerIndex + 1)%serverList.size
+        }
       }
 
-      sock.close()
+
     }
   }
 
@@ -211,28 +233,73 @@ class MessagePasser {
     override def run(): Unit = {
       if (!bootstrapDone) return
 
-      val sock: Socket = new Socket()
+      var sock: Socket = null
 
       Log.w("Pool", "Exiting !")
       //connect to bootstrap server
       try {
-        sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
-      } catch {
-        case e: Exception => Log.w("Pool", "Error connecting to bootstrap server: " + e)
-      }
+        sock = new Socket()
+        sock.connect(new InetSocketAddress(serverList.get(curServerIndex), bootstrapPort.toInt), TIMEOUT)
 
-      //send my info
-      try {
+        //send my info
         val os = new ObjectOutputStream(sock.getOutputStream)
         val msg : BootstrapMessage = new BootstrapMessage(self, 1)
         os.writeObject(msg) //1 for exit
+        sock.close()
       } catch {
-        case e: Exception => Log.w("Pool", "Error sending info to bootstrap server: " + e)
+        case e: Exception =>{
+          Log.w("Pool", "Error exiting: " + e)
+          if (sock != null) sock.close()
+          curServerIndex = (curServerIndex + 1)%serverList.size
+        }
       }
 
-      sock.close()
+
     }
   }
+
+  class HeartbeatSender extends Runnable {
+    var mp : MessagePasser = null;
+
+    val maxAttempts = 2;
+
+    def this(mp : MessagePasser) {
+      this()
+      this.mp = mp
+    }
+
+    override def run(): Unit = {
+      while (true) {
+        var pass = true
+        var attempt = 0
+        do {
+          attempt += 1
+          pass = true
+          var sock : Socket = null
+          try {
+            sock = new Socket()
+
+            Log.w("Pool", "Attempting to send a heartbeat message to bootstrap")
+            sock.connect(new InetSocketAddress(serverList.get(curServerIndex), bootstrapPort.toInt), TIMEOUT)
+
+            val os = new ObjectOutputStream(sock.getOutputStream)
+            os.writeObject(new BootstrapMessage(self, 3)) // 3 for heartbeat
+
+            sock.close()
+          } catch {
+            case e: Exception => {
+              Log.w("Pool", "Sending heartbeat unsuccessful, retrying: " + e)
+              pass = false
+              sock.close()
+              curServerIndex = (curServerIndex + 1)%serverList.size
+            }
+          }
+        } while (!pass && attempt < maxAttempts)
+        Thread.sleep(1000)
+      }
+    }
+  }
+
 
   /**
    * inform bootstrap server of location change
@@ -276,6 +343,14 @@ class MessagePasser {
 
   def deliver(msg : Message, dest : Int): Unit = {
     val oos : ObjectOutputStream = oosMap.get(dest)
+    var result = new Array[Float](1)
+    var node : Node = config.nodes.get(dest)
+    Location.distanceBetween(node.latitude, node.longitude, self.latitude, self.longitude, result)
+    Log.w("Pool", "Distance with " + dest + " is " + result(0))
+    if (result(0) > MAX_DISTANCE) {
+      Log.w("Pool", "Not delivering because distance too far")
+      return
+    }
     try {
       oos.writeObject(msg)
       oos.flush()
@@ -414,45 +489,7 @@ class MessagePasser {
       }
     }
   }
-
-  class HeartbeatSender extends Runnable {
-    var mp : MessagePasser = null;
-
-    val maxAttempts = 2;
-
-    def this(mp : MessagePasser) {
-      this()
-      this.mp = mp
-    }
-
-    override def run(): Unit = {
-      while (true) {
-        var pass = true
-        var attempt = 0
-        do {
-          attempt += 1
-          pass = true
-          try {
-            val sock: Socket = new Socket()
-
-            Log.w("Pool", "Attempting to send a heartbeat message to bootstrap")
-            sock.connect(new InetSocketAddress(bootstrapServer, bootstrapPort.toInt), TIMEOUT)
-
-            val os = new ObjectOutputStream(sock.getOutputStream)
-            os.writeObject(new BootstrapMessage(self, 3)) // 3 for heartbeat
-
-            sock.close()
-          } catch {
-            case e: Exception => {
-              Log.w("Pool", "Sending heartbeat unsuccessful, retrying: " + e)
-              pass = false
-            }
-          }
-        } while (attempt < maxAttempts)
-      Thread.sleep(1000)
-      }
-    }
-  }
+  
 
   def findAndRemoveRequest(msg : Message): Unit = {
     val it = receivedRequests.iterator()
