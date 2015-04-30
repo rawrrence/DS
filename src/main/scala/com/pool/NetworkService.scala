@@ -46,7 +46,7 @@ class NetworkService extends Service {
   def showMessages(): Unit = {
     var toast : Toast = null
     if (mp.receivedRequests.size > 0) {
-      var text : String = mp.receivedRequests.poll.text
+      var text : String = mp.receivedRequests.poll.title
       toast = Toast.makeText(this, text, Toast.LENGTH_SHORT)
     } else {
       toast = Toast.makeText(this, "No msg", Toast.LENGTH_SHORT)

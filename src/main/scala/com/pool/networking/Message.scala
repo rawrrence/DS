@@ -8,21 +8,23 @@ class Message extends Serializable {
   var src : Int = -1
   var dest : Int = -1
   var mType : String = null
-  var text : String = null
+  var title : String = ""
+  var body : String = ""
   var seqNum : Int = -1
 
-  def this(src : Int, dest : Int, text : String) {
+  def this(src : Int, dest : Int, title : String, body : String) {
     this()
     this.src = src
     this.dest = dest
-    this.text = text
+    this.title = body
   }
 
-  def this(src : Int, dest : Int, text : String, mtype : String) {
+  def this(src : Int, dest : Int, title : String, body : String, mtype : String) {
     this()
     this.src = src
     this.dest = dest
-    this.text = text
+    this.title = title
+    this.body = body
     this.mType = mtype
   }
 

@@ -449,7 +449,7 @@ class MessagePasser {
             }
           }
         } while (attempt < maxAttempts)
-      Thread.sleep(2000)
+      Thread.sleep(1000)
       }
     }
   }
@@ -460,7 +460,7 @@ class MessagePasser {
       val m = it.next()
       if (m.src == msg.src && m.seqNum == msg.seqNum) {
         receivedRequests.remove(m)
-        if (msg.text.equals(self.name)) {
+        if (msg.body.equals(self.name)) {
           pendingWork.add(m)
         }
       }

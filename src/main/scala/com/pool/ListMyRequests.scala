@@ -7,10 +7,9 @@ import android.os.{Bundle, IBinder}
 import android.view.View
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.{AdapterView, ArrayAdapter, TextView, Toast}
-import com.pool.ListRequests
 
 
-class ListReplies extends ListActivity {
+class ListMyRequests extends ListActivity {
 
   var mIsBound : Boolean = false
   var mBoundService : NetworkService = null
@@ -18,13 +17,13 @@ class ListReplies extends ListActivity {
     def onServiceConnected(className : ComponentName, service : IBinder) : Unit = {
       mBoundService = service.asInstanceOf[NetworkService#LocalBinder].getService()
 
-      var repliesArr = Array("The requests you've received are shown below")
+      var requestsArr = Array("The requests you've received are shown below")
 
-      for(i <- 0 to mBoundService.mp.receivedReplies.size() - 1){
-        repliesArr = repliesArr :+ mBoundService.mp.receivedReplies.get(mBoundService.mp.receivedReplies.size() - 1 - i).text
+      for(i <- 0 to mBoundService.mp.receivedRequests.size() - 1){
+        requestsArr = requestsArr :+ mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).title
       }
 
-      setListAdapter(new ArrayAdapter[String](ListReplies.this, R.layout.list_replies, repliesArr))
+      setListAdapter(new ArrayAdapter[String](ListMyRequests.this, R.layout.list_requests, requestsArr))
       val lv = getListView()
       lv.setTextFilterEnabled(true)
 
