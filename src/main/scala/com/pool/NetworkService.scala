@@ -46,7 +46,7 @@ class NetworkService extends Service {
     serverList.add("pool842-1.ddns.net")
     mp = new MessagePasser(locationService, "name", "10001", serverList, "10000")
 
-    return Service.START_STICKY
+    return Service.START_NOT_STICKY
   }
 
   def showMessages(): Unit = {

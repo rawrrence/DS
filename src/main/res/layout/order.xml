@@ -28,34 +28,34 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content">
                 <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:id="@+id/detail_title_label" android:layout_weight=".15" android:paddingLeft="30dp"
-                        android:text="Title:"/>
+                        android:id="@+id/detail_title_label" android:layout_weight=".85" android:paddingLeft="30dp"
+                        android:text="Subject"/>
                 <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:id="@+id/detail_title_text" android:layout_weight=".85" android:paddingRight="30dp"/>
+                        android:id="@+id/detail_title_text" android:layout_weight=".3" android:paddingRight="30dp"/>
         </LinearLayout>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" android:layout_marginTop="20dp">
                 <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Subject:"
-                        android:id="@+id/detail_body_label" android:paddingLeft="30dp" android:layout_weight=".15"/>
+                        android:text="Description"
+                        android:id="@+id/detail_body_label" android:paddingLeft="30dp" android:layout_weight=".85"/>
                 <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:inputType="textMultiLine"
                         android:text=""
-                        android:id="@+id/detail_body_text" android:layout_weight=".85" android:paddingRight="30dp"/>
+                        android:id="@+id/detail_body_text" android:layout_weight=".3" android:paddingRight="30dp"/>
         </LinearLayout>
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                   android:textAppearance="?android:attr/textAppearanceLarge" android:text="Send An Application"

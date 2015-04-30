@@ -284,7 +284,7 @@ class MessagePasser {
 
             val os = new ObjectOutputStream(sock.getOutputStream)
             os.writeObject(new BootstrapMessage(self, 3)) // 3 for heartbeat
-
+            Thread.sleep(1000)
             sock.close()
           } catch {
             case e: Exception => {
@@ -295,7 +295,7 @@ class MessagePasser {
             }
           }
         } while (!pass && attempt < maxAttempts)
-        Thread.sleep(1000)
+
       }
     }
   }
@@ -489,7 +489,7 @@ class MessagePasser {
       }
     }
   }
-  
+
 
   def findAndRemoveRequest(msg : Message): Unit = {
     val it = receivedRequests.iterator()

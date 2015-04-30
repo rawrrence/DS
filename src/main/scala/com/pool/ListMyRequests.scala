@@ -19,21 +19,16 @@ class ListMyRequests extends ListActivity {
 
       var requestsArr = Array("The requests you've received are shown below")
 
-      for(i <- 0 to mBoundService.mp.receivedRequests.size() - 1){
-        requestsArr = requestsArr :+ mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).title
+      for(i <- 0 to mBoundService.mp.sentRequests.size() - 1){
+        requestsArr = requestsArr :+ mBoundService.mp.sentRequests.get(mBoundService.mp.sentRequests.size() - 1 - i).title
       }
 
-      setListAdapter(new ArrayAdapter[String](ListMyRequests.this, R.layout.list_requests, requestsArr))
+      setListAdapter(new ArrayAdapter[String](ListMyRequests.this, R.layout.list_my_requests, requestsArr))
       val lv = getListView()
       lv.setTextFilterEnabled(true)
 
       lv.setOnItemClickListener(new OnItemClickListener() {
         override def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
-          Toast.makeText(
-            getApplicationContext(),
-            "Go to detailed view",
-            Toast.LENGTH_SHORT
-          ).show()
 
           val intent : Intent = new Intent(getApplicationContext(), classOf[RequestDetail])
           intent.putExtra("content", view.asInstanceOf[TextView].getText())

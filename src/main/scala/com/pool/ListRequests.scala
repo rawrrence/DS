@@ -38,6 +38,7 @@ class ListRequests extends ListActivity {
             Toast.LENGTH_SHORT
           ).show()
 
+
           val intent : Intent = new Intent(getApplicationContext(), classOf[RequestDetail])
           intent.putExtra("content", view.asInstanceOf[TextView].getText())
           startActivity(intent)
