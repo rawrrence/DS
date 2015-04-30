@@ -16,6 +16,7 @@ class Home extends Activity {
   var workButton : Button = null
   var showButton : Button = null
   var chatButton : Button = null
+  var myRequestsButton : Button = null
 
   var mIsBound : Boolean = false
   var mBoundService : NetworkService = null
@@ -35,7 +36,7 @@ class Home extends Activity {
     //network service
     val serviceIntent : Intent = new Intent(this, classOf[NetworkService])
     startService(serviceIntent)
-    bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE)
+    bindService(serviceIntent, mConnection, Context.BIND_IMPORTANT)
     mIsBound = true
   }
 
@@ -51,6 +52,12 @@ class Home extends Activity {
     requestButton.setOnClickListener(requestClicked)
     workButton.setOnClickListener(workClicked)
     chatButton.setOnClickListener(chatClicked)
+    myRequestsButton = findViewById(R.id.my_requests).asInstanceOf[Button]
+
+
+    requestButton.setOnClickListener(requestClicked)
+    workButton.setOnClickListener(workClicked)
+    myRequestsButton.setOnClickListener(myRequestsClicked)
 
     // Create and start the service
     doStartAndBindService()
@@ -88,9 +95,10 @@ class Home extends Activity {
     }
   }
 
-  var showClicked : OnClickListener = new OnClickListener {
+  var myRequestsClicked : OnClickListener = new OnClickListener {
     override def onClick(v: View): Unit = {
-      mBoundService.showMessages()
+      val intent : Intent = new Intent(getApplicationContext(), classOf[ListMyRequests])
+      startActivity(intent)
     }
   }
 

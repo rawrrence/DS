@@ -38,6 +38,7 @@ class RequestDetail extends Activity {
         Log.w("Pool",mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).title)
         if (mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).title == requestText) {
           val request = mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i)
+          Log.w("Pool", request.src.toString)
           descrpText.setText(request.body)
           titleText.setText(request.title)
         }

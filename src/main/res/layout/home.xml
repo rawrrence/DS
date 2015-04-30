@@ -11,7 +11,7 @@
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="30dp">
             <TextView
                     android:layout_width="wrap_content"
@@ -30,7 +30,6 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/home_work_button"
-<<<<<<< HEAD
                     android:id="@+id/home_work_button" android:layout_gravity="center_horizontal" android:padding="20dp"/>
 
             <Button
@@ -39,7 +38,6 @@
                     android:text="@string/chat_button"
                     android:id="@+id/chat_button" android:layout_gravity="center_horizontal" android:padding="20dp"/>
 
-=======
                     android:id="@+id/home_work_button" android:layout_gravity="center_horizontal" android:padding="20dp"
                     android:layout_marginBottom="120dp"/>
             <LinearLayout
@@ -50,9 +48,8 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:text="Pending Requests"
-                        android:id="@+id/button2" android:layout_weight=".5"/>
+                        android:id="@+id/my_requests" android:layout_weight=".5" android:padding="20dp"/>
             </LinearLayout>
->>>>>>> 7162829d5198b47783090d5aee6560cdf3c45aec
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
