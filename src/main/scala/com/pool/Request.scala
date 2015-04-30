@@ -7,7 +7,7 @@ import android.os.{IBinder, Bundle}
 import android.telephony.SmsMessage.MessageClass
 import android.view.View
 import android.view.View.OnClickListener
-import android.widget.{Toast, TextView, Button}
+import android.widget.{EditText, Toast, TextView, Button}
 import com.pool
 import com.pool.networking.Message
 
@@ -19,6 +19,7 @@ class Request extends Activity {
   var sendButton : Button = null
   var descrpText : TextView = null
   var titleText : TextView = null
+  var phoneText : EditText = null
 
   var mIsBound : Boolean = false
   var mBoundService : NetworkService = null
@@ -44,6 +45,7 @@ class Request extends Activity {
     sendButton = findViewById(R.id.request_send_button).asInstanceOf[Button]
     titleText = findViewById(R.id.request_title_text).asInstanceOf[TextView]
     descrpText = findViewById(R.id.request_descrp_text).asInstanceOf[TextView]
+    phoneText = findViewById(R.id.phone).asInstanceOf[EditText]
 
     sendButton.setOnClickListener(sendClicked)
 
@@ -62,6 +64,7 @@ class Request extends Activity {
       val title: String = titleText.getText.toString
 
       val msg : Message = new Message(mBoundService.mp.self.id, -1, title, descrp,"REQUEST")
+      msg.phone = phoneText.getText.toString.toInt
 
       mBoundService.mp.broadcast(msg)
       val toast = Toast.makeText(Request.this, "Request has been sent!", Toast.LENGTH_SHORT)
