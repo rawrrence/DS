@@ -37,8 +37,6 @@ class MessagePasser {
 
   var receivedRequests : util.LinkedList[Message] = null
   var receivedReplies : util.LinkedList[Message] = null
-  var pendingWork : util.LinkedList[Message] = null
-  var pendingService : util.LinkedList[Message] = null
   var sentRequests : util.ArrayList[Message] = null
 
 
@@ -72,8 +70,6 @@ class MessagePasser {
 
     receivedRequests = new util.LinkedList[Message]()
     receivedReplies = new util.LinkedList[Message]()
-    pendingWork = new util.LinkedList[Message]()
-    pendingService = new util.LinkedList[Message]()
     sentRequests = new util.ArrayList[Message]()
 
     //start connecting
@@ -506,9 +502,7 @@ class MessagePasser {
       val m = it.next()
       if (m.src == msg.src && m.seqNum == msg.seqNum) {
         receivedRequests.remove(m)
-        if (msg.body.equals(self.name)) {
-          pendingWork.add(m)
-        }
+
       }
     }
   }
@@ -518,9 +512,10 @@ class MessagePasser {
     while(it.hasNext) {
       val m = it.next()
       if (m.seqNum == msg.seqNum) {
-        m.dest = msg.src
-        pendingService.add(m)
         sentRequests.remove(m)
+        m.body = msg.src.toString
+        m.setMessageType("CANCEL")
+        broadcast(m)
       }
     }
   }

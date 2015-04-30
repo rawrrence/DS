@@ -37,7 +37,7 @@ class RequestDetail extends Activity {
       for(i <- 0 to mBoundService.mp.receivedRequests.size() - 1){
         Log.w("Pool",mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).title)
         if (mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).title == requestText) {
-          val request = mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i)
+          request = mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i)
           Log.w("Pool", request.src.toString)
           descrpText.setText(request.body)
           titleText.setText(request.title)
@@ -71,9 +71,8 @@ class RequestDetail extends Activity {
   var replyClicked : OnClickListener = new OnClickListener {
     override def onClick(v: View): Unit = {
       val reply = replyText.getText.toString
-      Log.w("Poolzz", mBoundService.mp.self.id.toString)
-      Log.w("Poolzz", request.src.toString)
       var msg : Message = new Message(mBoundService.mp.self.id, request.src,"",reply,"REPLY")
+      msg.seqNum = request.seqNum
       mBoundService.mp.send(msg, request.src)
       finish()
     }
