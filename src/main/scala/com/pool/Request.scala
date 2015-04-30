@@ -64,7 +64,7 @@ class Request extends Activity {
       val title: String = titleText.getText.toString
 
       val msg : Message = new Message(mBoundService.mp.self.id, -1, title, descrp,"REQUEST")
-      msg.phone = phoneText.getText.toString.toInt
+      msg.phone = phoneText.getText.toString
 
       mBoundService.mp.broadcast(msg)
       val toast = Toast.makeText(Request.this, "Request has been sent!", Toast.LENGTH_SHORT)
