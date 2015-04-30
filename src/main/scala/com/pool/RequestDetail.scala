@@ -27,6 +27,8 @@ class RequestDetail extends Activity {
 
       var descrpText = findViewById(R.id.detail_body_text).asInstanceOf[TextView]
       var titleText = findViewById(R.id.detail_title_text).asInstanceOf[TextView]
+      var nameText : TextView = findViewById(R.id.detail_user).asInstanceOf[TextView]
+      nameText.setText(mBoundService.mp.self.name)
       replyText = findViewById(R.id.reply_text).asInstanceOf[EditText]
       replyButton = findViewById(R.id.reply_button).asInstanceOf[Button]
       replyButton.setOnClickListener(replyClicked)
@@ -43,6 +45,8 @@ class RequestDetail extends Activity {
           titleText.setText(request.title)
         }
       }
+      nameText.setText(mBoundService.mp.self.name)
+
     }
     def onServiceDisconnected(className : ComponentName): Unit = {
       mBoundService = null
