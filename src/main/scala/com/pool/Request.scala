@@ -18,6 +18,7 @@ class Request extends Activity {
 
   var sendButton : Button = null
   var descrpText : TextView = null
+  var titleText : TextView = null
 
   var mIsBound : Boolean = false
   var mBoundService : NetworkService = null
@@ -41,6 +42,7 @@ class Request extends Activity {
     getWindow().getDecorView().setBackgroundColor(Color.rgb(0,73,105))
 
     sendButton = findViewById(R.id.request_send_button).asInstanceOf[Button]
+    titleText = findViewById(R.id.request_title_text).asInstanceOf[TextView]
     descrpText = findViewById(R.id.request_descrp_text).asInstanceOf[TextView]
 
     sendButton.setOnClickListener(sendClicked)
@@ -57,9 +59,9 @@ class Request extends Activity {
   var sendClicked : OnClickListener = new OnClickListener() {
     override def onClick(v : View): Unit = {
       val descrp: String = descrpText.getText.toString
+      val title: String = titleText.getText.toString
 
-      // TODO: send the request using the message passer from NetworkService
-      var msg : Message = new Message(mBoundService.mp.self.id, -1, descrp,"REQUEST")
+      val msg : Message = new Message(mBoundService.mp.self.id, -1, title, descrp,"REQUEST")
 
       mBoundService.mp.broadcast(msg)
       val toast = Toast.makeText(Request.this, "Request has been sent!", Toast.LENGTH_SHORT)

@@ -58,7 +58,6 @@ class Home extends Activity {
 
   override def onResume(): Unit = {
     super.onResume()
-
   }
 
   override def onDestroy(): Unit = {
@@ -77,7 +76,7 @@ class Home extends Activity {
 
   var workClicked : OnClickListener = new OnClickListener() {
     override def onClick(v : View): Unit = {
-      val intent : Intent = new Intent(getApplicationContext(), classOf[ListLayoutActivity])
+      val intent : Intent = new Intent(getApplicationContext(), classOf[ListRequests])
       startActivity(intent)
     }
   }

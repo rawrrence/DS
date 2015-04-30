@@ -5,12 +5,19 @@ import android.content.{ComponentName, Context, Intent, ServiceConnection}
 import android.graphics.Color
 import android.os.{Bundle, IBinder}
 import android.util.Log
-import android.widget.TextView
+import android.view.View
+import android.view.View.OnClickListener
+import android.widget.{EditText, Button, TextView}
+import com.pool.networking.Message
 
 /**
  * Created by Lawrence on 4/25/15.
  */
 class RequestDetail extends Activity {
+
+  var replyButton : Button = null
+  var request : Message = null
+  var replyText : EditText = null
 
   var mIsBound : Boolean = false
   var mBoundService : NetworkService = null
@@ -18,14 +25,21 @@ class RequestDetail extends Activity {
     def onServiceConnected(className : ComponentName, service : IBinder) : Unit = {
       mBoundService = service.asInstanceOf[NetworkService#LocalBinder].getService()
 
-      var descrpText = findViewById(R.id.orderDetails).asInstanceOf[TextView]
+      var descrpText = findViewById(R.id.detail_body_text).asInstanceOf[TextView]
+      var titleText = findViewById(R.id.detail_title_text).asInstanceOf[TextView]
+      replyText = findViewById(R.id.reply_text).asInstanceOf[EditText]
+      replyButton = findViewById(R.id.reply_button).asInstanceOf[Button]
+      replyButton.setOnClickListener(replyClicked)
+
 
       var requestText = getIntent().getExtras().getString("content")
       Log.w("Pool", requestText)
       for(i <- 0 to mBoundService.mp.receivedRequests.size() - 1){
-        Log.w("Pool",mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).text)
-        if (mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).text == requestText){
-          descrpText.setText(mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).text + mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).mType)
+        Log.w("Pool",mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).title)
+        if (mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i).title == requestText) {
+          val request = mBoundService.mp.receivedRequests.get(mBoundService.mp.receivedRequests.size() - 1 - i)
+          descrpText.setText(request.body)
+          titleText.setText(request.title)
         }
       }
     }
@@ -53,5 +67,13 @@ class RequestDetail extends Activity {
     mIsBound = false
   }
 
+  var replyClicked : OnClickListener = new OnClickListener {
+    override def onClick(v: View): Unit = {
+      val reply = replyText.getText.toString
+      var msg : Message = new Message(mBoundService.mp.self.id, request.src,"",reply,"REPLY")
+      mBoundService.mp.send(msg, request.src)
+      finish()
+    }
+  }
 
 }

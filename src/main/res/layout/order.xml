@@ -5,6 +5,7 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
+<<<<<<< HEAD
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -37,5 +38,75 @@
                 android:id="@+id/button"
                 android:layout_gravity="center_horizontal"
                 />
+=======
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+                android:gravity="center">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="Request From"
+                        android:id="@+id/textView6" android:layout_gravity="center_horizontal" android:padding="30dp"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text=""
+                        android:id="@+id/detail_user" android:layout_gravity="center_horizontal" android:padding="30dp"/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:id="@+id/detail_title_label" android:layout_weight=".15" android:paddingLeft="30dp"
+                        android:text="Title:"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:id="@+id/detail_title_text" android:layout_weight=".85" android:paddingRight="30dp"/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="20dp">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Subject:"
+                        android:id="@+id/detail_body_label" android:paddingLeft="30dp" android:layout_weight=".15"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:inputType="textMultiLine"
+                        android:text=""
+                        android:id="@+id/detail_body_text" android:layout_weight=".85" android:paddingRight="30dp"/>
+        </LinearLayout>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:textAppearance="?android:attr/textAppearanceLarge" android:text="Send An Application"
+                  android:id="@+id/textView7" android:layout_gravity="center_horizontal" android:padding="30dp"
+                  android:layout_marginTop="40dp"/>
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/reply_text" android:layout_gravity="center_horizontal"
+                android:hint="Give some information about yourself, describe why you would be a good fit for the job, etc."
+                android:padding="30dp"/>
+        <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send"
+        android:id="@+id/reply_button"
+        android:layout_marginTop="55dp"/>
+>>>>>>> 7162829d5198b47783090d5aee6560cdf3c45aec
 
 </LinearLayout>
