@@ -441,6 +441,9 @@ class MessagePasser {
           receivedReplies.add(msg)
         }
         if (msg.mType.equals(Cancel)) {
+          if (msg.body == self.id.toString){
+            receivedReplies.add(msg)
+          }
             findAndRemoveRequest(msg)
         }
       } catch {

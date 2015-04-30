@@ -1,9 +1,9 @@
 package com.pool
 
-import _root_.android.app.Activity
+import android.app.{AlertDialog, Activity}
 import _root_.android.graphics.Color
 import android.os.{IBinder, Bundle}
-import android.content.{Context, ComponentName, ServiceConnection, Intent}
+import android.content._
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.{Button, MultiAutoCompleteTextView}
@@ -55,6 +55,32 @@ class Home extends Activity {
   }
 
   override def onResume(): Unit = {
+    def buildAlertMessageNoGps(con : Context) : Unit = {
+      val builder : AlertDialog.Builder = new AlertDialog.Builder(con)
+      builder.setMessage("You have get the job!")
+        .setCancelable(true)
+        .setPositiveButton("Check", new DialogInterface.OnClickListener() {
+        def onClick(dialog : DialogInterface, id : Int) : Unit = {
+          dialog.cancel()
+        }
+      })
+        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+        def onClick(dialog : DialogInterface, id : Int) : Unit = {
+          dialog.cancel()
+        }
+      })
+      val alert : AlertDialog = builder.create()
+      alert.show()
+    }
+
+    if (mBoundService != null) {
+      for(i <- 0 to mBoundService.mp.receivedReplies.size() - 1){
+        if (mBoundService.mp.receivedReplies.get(mBoundService.mp.receivedReplies.size() - 1 - i).body == mBoundService.mp.self.id.toString){
+          buildAlertMessageNoGps(this)
+        }
+      }
+    }
+
     super.onResume()
   }
 

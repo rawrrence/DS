@@ -17,7 +17,7 @@ class ListMyRequests extends ListActivity {
     def onServiceConnected(className : ComponentName, service : IBinder) : Unit = {
       mBoundService = service.asInstanceOf[NetworkService#LocalBinder].getService()
 
-      var requestsArr = Array("The requests you've received are shown below")
+      var requestsArr = Array("The requests you've sent are shown below")
 
       for(i <- 0 to mBoundService.mp.sentRequests.size() - 1){
         requestsArr = requestsArr :+ mBoundService.mp.sentRequests.get(mBoundService.mp.sentRequests.size() - 1 - i).title
