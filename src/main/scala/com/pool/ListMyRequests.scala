@@ -30,7 +30,7 @@ class ListMyRequests extends ListActivity {
       lv.setOnItemClickListener(new OnItemClickListener() {
         override def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
 
-          val intent : Intent = new Intent(getApplicationContext(), classOf[RequestDetail])
+          val intent : Intent = new Intent(getApplicationContext(), classOf[ListReplys])
           intent.putExtra("content", view.asInstanceOf[TextView].getText())
           startActivity(intent)
         }

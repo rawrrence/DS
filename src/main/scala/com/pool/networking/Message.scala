@@ -16,7 +16,8 @@ class Message extends Serializable {
     this()
     this.src = src
     this.dest = dest
-    this.title = body
+    this.title = title
+    this.body = body
   }
 
   def this(src : Int, dest : Int, title : String, body : String, mtype : String) {
