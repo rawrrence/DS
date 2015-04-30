@@ -11,6 +11,7 @@ class Message extends Serializable {
   var title : String = ""
   var body : String = ""
   var seqNum : Int = -1
+  var phone : Int = -1
 
   def this(src : Int, dest : Int, title : String, body : String) {
     this()
