@@ -115,7 +115,7 @@ class ListReplys extends ListActivity {
       if (position == 0){
         reject.setEnabled(false)
         accept.setEnabled(false)
-        Viewtitle.setText("Origin message")
+        Viewtitle.setText("Your Original Request Message")
       }
 
 

@@ -45,7 +45,7 @@ class RequestDetail extends Activity {
           titleText.setText(request.title)
         }
       }
-      nameText.setText(mBoundService.mp.self.name)
+      nameText.setText("Request From " + mBoundService.mp.self.name)
 
     }
     def onServiceDisconnected(className : ComponentName): Unit = {

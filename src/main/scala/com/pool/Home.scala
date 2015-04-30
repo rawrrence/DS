@@ -55,16 +55,16 @@ class Home extends Activity {
   }
 
   override def onResume(): Unit = {
-    def buildAlertMessageNoGps(con : Context) : Unit = {
+    def buildAlertMessageNoGps(con : Context, phone: String, name: String) : Unit = {
       val builder : AlertDialog.Builder = new AlertDialog.Builder(con)
-      builder.setMessage("You have get the job!")
+      builder.setMessage("You have a new job! Contact the requester with the information below.")
         .setCancelable(true)
-        .setPositiveButton("Check", new DialogInterface.OnClickListener() {
+        .setPositiveButton(name, new DialogInterface.OnClickListener() {
         def onClick(dialog : DialogInterface, id : Int) : Unit = {
           dialog.cancel()
         }
       })
-        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+        .setNegativeButton(phone, new DialogInterface.OnClickListener() {
         def onClick(dialog : DialogInterface, id : Int) : Unit = {
           dialog.cancel()
         }
@@ -76,7 +76,12 @@ class Home extends Activity {
     if (mBoundService != null) {
       for(i <- 0 to mBoundService.mp.receivedReplies.size() - 1){
         if (mBoundService.mp.receivedReplies.get(mBoundService.mp.receivedReplies.size() - 1 - i).body == mBoundService.mp.self.id.toString){
-          buildAlertMessageNoGps(this)
+          val phone : String = mBoundService.mp.receivedReplies.get(mBoundService.mp.receivedReplies.size() - 1 - i).phone
+//          var name : String = mBoundService.mp.config.nodes.get(mBoundService.mp.receivedReplies.get(mBoundService.mp.receivedReplies.size() - 1 - i).src).name
+          var name : String = mBoundService.mp.config.nodes.get(mBoundService.mp.receivedReplies.get(mBoundService.mp.receivedReplies.size()-1-i).src
+).name
+          buildAlertMessageNoGps(this, phone, name)
+          mBoundService.mp.receivedReplies.remove(mBoundService.mp.receivedReplies.size() - 1 - i)
         }
       }
     }
