@@ -71,6 +71,8 @@ class RequestDetail extends Activity {
   var replyClicked : OnClickListener = new OnClickListener {
     override def onClick(v: View): Unit = {
       val reply = replyText.getText.toString
+      Log.w("Poolzz", mBoundService.mp.self.id.toString)
+      Log.w("Poolzz", request.src.toString)
       var msg : Message = new Message(mBoundService.mp.self.id, request.src,"",reply,"REPLY")
       mBoundService.mp.send(msg, request.src)
       finish()

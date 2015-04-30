@@ -125,6 +125,7 @@ class MessagePasser {
           //send my info
           val os = new ObjectOutputStream(sock.getOutputStream)
           os.writeObject(new BootstrapMessage(tmpNode, 0)) //0 for init
+          os.flush()
 
           Log.w("Pool", "receiving info from bootsrap")
           //receive bootstrap info
@@ -133,13 +134,14 @@ class MessagePasser {
           config = is.readObject().asInstanceOf[Configuration]
 
           Log.w("Pool", "My id is:" + self.id)
-
+          Thread.sleep(1000)
           sock.close()
         } catch {
           case e: Exception => {
             Log.w("Pool", "Error bootstrapping, retrying: " + e)
             pass = false
             if (sock != null)
+              Thread.sleep(1000)
               sock.close()
             curServerIndex = (curServerIndex + 1)%serverList.size
             Thread.sleep(1000)
@@ -205,12 +207,16 @@ class MessagePasser {
 
         val os = new ObjectOutputStream(sock.getOutputStream)
         os.writeObject(new BootstrapMessage(self, 2)) //0 for init
-
+        os.flush()
+        Thread.sleep(1000)
         sock.close()
       } catch {
         case e: Exception =>{
           Log.w("Pool", "Error updating location: " + e)
-          if (sock != null) sock.close()
+          if (sock != null) {
+            Thread.sleep(1000)
+            sock.close()
+          }
           curServerIndex = (curServerIndex + 1)%serverList.size
         }
       }
@@ -245,11 +251,16 @@ class MessagePasser {
         val os = new ObjectOutputStream(sock.getOutputStream)
         val msg : BootstrapMessage = new BootstrapMessage(self, 1)
         os.writeObject(msg) //1 for exit
+        os.flush()
+        Thread.sleep(1000)
         sock.close()
       } catch {
         case e: Exception =>{
           Log.w("Pool", "Error exiting: " + e)
-          if (sock != null) sock.close()
+          if (sock != null) {
+            Thread.sleep(1000)
+            sock.close()
+          }
           curServerIndex = (curServerIndex + 1)%serverList.size
         }
       }
@@ -269,33 +280,30 @@ class MessagePasser {
     }
 
     override def run(): Unit = {
+      var heartOpen = false
+      var sock : Socket = null
       while (true) {
-        var pass = true
-        var attempt = 0
-        do {
-          attempt += 1
-          pass = true
-          var sock : Socket = null
-          try {
+        try {
+          if (!heartOpen) {
+            curServerIndex = (curServerIndex + 1) % serverList.size()
             sock = new Socket()
-
-            Log.w("Pool", "Attempting to send a heartbeat message to bootstrap")
             sock.connect(new InetSocketAddress(serverList.get(curServerIndex), bootstrapPort.toInt), TIMEOUT)
-
-            val os = new ObjectOutputStream(sock.getOutputStream)
-            os.writeObject(new BootstrapMessage(self, 3)) // 3 for heartbeat
-            Thread.sleep(1000)
-            sock.close()
-          } catch {
-            case e: Exception => {
-              Log.w("Pool", "Sending heartbeat unsuccessful, retrying: " + e)
-              pass = false
-              sock.close()
-              curServerIndex = (curServerIndex + 1)%serverList.size
-            }
+            heartOpen = true
           }
-        } while (!pass && attempt < maxAttempts)
+          Log.w("Pool", "Attempting to send a heartbeat message to bootstrap")
 
+          val os = new ObjectOutputStream(sock.getOutputStream)
+          os.writeObject(new BootstrapMessage(self, 3)) // 3 for heartbeat
+          os.flush()
+          Thread.sleep(1000)
+        } catch {
+          case e: Exception => {
+            Log.w("Pool", "Sending heartbeat unsuccessful, retrying: " + e)
+            Thread.sleep(1000)
+            heartOpen = false
+            sock.close()
+          }
+        }
       }
     }
   }
@@ -392,6 +400,7 @@ class MessagePasser {
                 conns.put(nodeId, s)
                 oosMap.put(nodeId, new ObjectOutputStream(s.getOutputStream()))
                 oosMap.get(nodeId).writeObject(self)
+                oosMap.get(nodeId).flush()
 
                 var listener : Listener = new Listener(mp, new ObjectInputStream(s.getInputStream()), nodeId)
                 new Thread(listener).start()
