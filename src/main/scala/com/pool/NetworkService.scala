@@ -1,7 +1,7 @@
 package com.pool
 
 import java.security.Security
-
+import java.util
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
@@ -26,8 +26,6 @@ class NetworkService extends Service {
 
   override def onCreate(): Unit = {
     //handles initialization in onStartCommand
-    System.setProperty("networkaddress.cache.ttl", "0");
-    Security.setProperty("networkaddress.cache.ttl", "0");
   }
 
   override def onBind(intent : Intent) : IBinder = {
@@ -42,7 +40,11 @@ class NetworkService extends Service {
     Log.w("Pool", "Service is starting")
 
     locationService = new LocationService(this.getApplicationContext)
-    mp = new MessagePasser(locationService, "name", "10001", "pool842.ddns.net", "10000")
+
+    var serverList : util.ArrayList[String] = new util.ArrayList[String]()
+    serverList.add("pool842.ddns.net")
+    serverList.add("pool842-1.ddns.net")
+    mp = new MessagePasser(locationService, "name", "10001", serverList, "10000")
 
     return Service.START_STICKY
   }
