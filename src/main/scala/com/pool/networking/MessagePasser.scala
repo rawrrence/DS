@@ -433,9 +433,20 @@ class MessagePasser {
       var msg: Message = null
       Log.w("Pool", "Connection established with " + remoteNodeId)
       while (connectionOpen) try {
+        var close = true
         msg = ois.readObject().asInstanceOf[Message]
         if (msg.mType.equals(Request)) {
-          receivedRequests.add(msg);
+          var node : Node = config.nodes.get(msg.src)
+          var result = new Array[Float](1)
+          Location.distanceBetween(node.latitude, node.longitude, self.latitude, self.longitude, result)
+          Log.w("Pool", "Distance with " + msg.src + " is " + result(0))
+          if (result(0) > MAX_DISTANCE) {
+            Log.w("Pool", "Not delivering because distance too far")
+            close = false
+          }
+          if (close) {
+            receivedRequests.add(msg);
+          }
         }
         if (msg.mType.equals(Reply)) {
           receivedReplies.add(msg)
