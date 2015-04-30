@@ -68,18 +68,17 @@
             android:weightSum="1">
 
         <Button
-                android:layout_width="171dp"
-                android:layout_height="wrap_content"
-                android:text="Reject"
-                android:id="@+id/reply_reject_button"
-                android:layout_marginTop="55dp" />
-
-        <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Accept"
                 android:id="@+id/reply_accept_button"
-                android:layout_marginTop="55dp" />
+                android:layout_marginTop="55dp" android:layout_weight=".5"/>
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reject"
+                android:id="@+id/reply_reject_button"
+                android:layout_marginTop="55dp" android:layout_weight=".5"/>
     </LinearLayout>
 
 </LinearLayout>
